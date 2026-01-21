@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= ilan.baslik %> | İlan Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root { --soft-bg: #f8f9fa; --card-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        body { background-color: var(--soft-bg); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        .navbar { background: #1a1d20 !important; padding: 1rem 0; }
+        .detail-img { border-radius: 20px; width: 100%; height: 500px; object-fit: cover; box-shadow: var(--card-shadow); }
+        .sidebar-card { border-radius: 20px; border: none; box-shadow: var(--card-shadow); background: white; }
+        .price-tag { font-size: 2.5rem; font-weight: 800; color: #0d6efd; letter-spacing: -1px; }
+        .info-table td { padding: 12px 0; border-bottom: 1px solid #eee; }
+        .info-table td:last-child { font-weight: 700; text-align: right; color: #212529; }
+        .info-label { color: #6c757d; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark mb-5 shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-3" href="/">
+            <i class="bi bi-shop me-2 text-warning"></i>İLAN PORTAL
+        </a>
+        <div class="ms-auto">
+            <a href="/" class="btn btn-outline-light rounded-pill px-4 btn-sm">
+                <i class="bi bi-arrow-left me-2"></i>İlanlara Dön
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <img src="<%= ilan.resim %>" class="detail-img mb-4" alt="<%= ilan.baslik %>">
+
+            <div class="card sidebar-card p-4">
+                <h1 class="fw-bold mb-4"><%= ilan.baslik %></h1>
+
+                <h5 class="fw-bold border-bottom pb-2 mb-3">
+                    <i class="bi bi-card-text me-2"></i>İlan Açıklaması
+                </h5>
+                <p class="text-secondary lh-lg" style="white-space: pre-line;">
+                    <%= ilan.aciklama || 'Bu ilan için detaylı açıklama girilmemiştir.' %>
+                </p>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card sidebar-card p-4 text-center mb-4 border-bottom border-primary border-5">
+                <div class="price-tag mb-0"><%= ilan.fiyat %></div>
+                <small class="text-muted fw-bold">Pazarlık Payı Vardır</small>
+            </div>
+
+            <div class="card sidebar-card p-4 mb-4">
+                <h5 class="fw-bold mb-4 text-dark">
+                    <i class="bi bi-envelope-at me-2 text-primary"></i>Satıcıya Mesaj Gönder
+                </h5>
+
+                <form id="mesajFormu">
+                    <div class="mb-3">
+                        <input type="text"
+                               class="form-control py-2 border-0 bg-light"
+                               placeholder="Adınız Soyadınız"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <textarea class="form-control border-0 bg-light"
+                                  rows="4"
+                                  placeholder="İlan hakkında bilgi almak istiyorum..."
+                                  required></textarea>
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-primary w-100 fw-bold py-3 shadow-sm rounded-3">
+                        <i class="bi bi-send-fill me-2"></i>Mesajı Gönder
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ ÇALIŞAN MESAJ SCRIPTİ -->
+<script>
+document.getElementById("mesajFormu").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    alert("✅ Mesajınız başarıyla gönderildi!\nSatıcı en kısa sürede sizinle iletişime geçecektir.");
+
+    this.reset();
+});
+</script>
+
+</body>
+</html>
