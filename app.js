@@ -53,13 +53,14 @@ const klasikFotolar = [
 
 const iosModeller = [
     "iPhone 11","iPhone 12","iPhone 13","iPhone 14","iPhone 15",
-    "iPhone 11 Pro","iPhone 12 Pro","iPhone 13 Pro","iPhone 14 Pro","iPhone 15 Pro","iPhone 15 Pro Max"
+    "iPhone 11 Pro","iPhone 12 Pro","iPhone 13 Pro",
+    "iPhone 14 Pro","iPhone 15 Pro","iPhone 15 Pro Max"
 ];
 
 const androidModeller = [
     "Samsung Galaxy S21","Samsung Galaxy S22","Samsung Galaxy S23",
-    "Samsung Galaxy S24","Samsung Galaxy S24 Ultra","Samsung Galaxy Note 20",
-    "Samsung Galaxy A54","Samsung Galaxy A34"
+    "Samsung Galaxy S24","Samsung Galaxy S24 Ultra",
+    "Samsung Galaxy Note 20","Samsung Galaxy A54","Samsung Galaxy A34"
 ];
 
 const klasikModeller = [
@@ -133,7 +134,7 @@ app.get('/', (req, res) => {
     const aranan = req.query.search || "";
     const kategori = req.query.category || "";
 
-    let sonuc = ilanlar.filter(i =>
+    const sonuc = ilanlar.filter(i =>
         i.baslik.toLowerCase().includes(aranan.toLowerCase()) &&
         (kategori === "" || i.kategori === kategori)
     );
@@ -142,8 +143,7 @@ app.get('/', (req, res) => {
         ilanlar: sonuc,
         aramaYapildiMi: !!(aranan || kategori),
         aramaKelimesi: aranan,
-        seciliKategori: kategori,
-        user: null
+        seciliKategori: kategori
     });
 });
 
@@ -184,7 +184,7 @@ app.post('/ekle', (req, res) => {
     res.redirect('/');
 });
 
-// DÜZENLE (UPDATE) ✅
+// DÜZENLE (UPDATE)
 app.get('/duzenle/:id', (req, res) => {
     const ilan = ilanlar.find(i => i.id === req.params.id);
     if (!ilan) return res.redirect('/');
