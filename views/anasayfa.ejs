@@ -76,6 +76,13 @@
                            class="form-control form-control-sm me-2"
                            placeholder="Adınız"
                            required>
+
+                    <input type="password"
+                           name="password"
+                           class="form-control form-control-sm me-2"
+                           placeholder="Şifre"
+                           required>
+
                     <button class="btn btn-warning btn-sm fw-bold rounded-pill px-3">
                         Üye Girişi
                     </button>
@@ -95,7 +102,9 @@
         <form action="/" method="GET"
               class="input-group input-group-lg mx-auto"
               style="max-width: 900px;">
-            <input type="text" name="search" class="form-control"
+            <input type="text"
+                   name="search"
+                   class="form-control"
                    placeholder="Model ara..."
                    value="<%= aramaKelimesi || '' %>">
 

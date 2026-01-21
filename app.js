@@ -13,6 +13,12 @@ app.use(session({
     saveUninitialized: false
 }));
 
+/* ================= FAKE KULLANICI ================= */
+const fakeUser = {
+    name: "Sevde",
+    password: "1234"
+};
+
 /* ================= FOTOĞRAF HAVUZLARI ================= */
 
 const iosFotolar = [
@@ -115,20 +121,24 @@ for (let i = 2; i <= 80; i++) {
 
 /* ================= AUTH ================= */
 
-// LOGIN SAYFASI
-app.get('/login', (req, res) => {
-    res.render('login');
-});
-
-// SADECE GİRİŞ
+// LOGIN (ŞİFRELİ)
 app.post('/login', (req, res) => {
-    const { name } = req.body;
-    if (!name) return res.redirect('/login');
-    req.session.user = { name };
-    res.redirect('/');
+    const { name, password } = req.body;
+
+    if (name === fakeUser.name && password === fakeUser.password) {
+        req.session.user = { name };
+        return res.redirect('/');
+    }
+
+    res.send(`
+        <script>
+            alert("Hatalı kullanıcı adı veya şifre!");
+            history.back();
+        </script>
+    `);
 });
 
-// ÇIKIŞ
+// LOGOUT
 app.get('/logout', (req, res) => {
     req.session.destroy(() => {
         res.redirect('/');
@@ -137,7 +147,6 @@ app.get('/logout', (req, res) => {
 
 /* ================= ROUTES ================= */
 
-// ANA SAYFA
 app.get('/', (req, res) => {
     const aranan = req.query.search || "";
     const kategori = req.query.category || "";
@@ -156,27 +165,23 @@ app.get('/', (req, res) => {
     });
 });
 
-// HAKKIMIZDA
 app.get('/hakkimizda', (req, res) => {
     res.render('hakkimizda', { user: req.session.user });
 });
 
-// DETAY
 app.get('/detay/:id', (req, res) => {
     const ilan = ilanlar.find(i => i.id === req.params.id);
     if (!ilan) return res.redirect('/');
     res.render('ilan-detay', { ilan, user: req.session.user });
 });
 
-// EKLE (GET)
 app.get('/ekle', (req, res) => {
-    if (!req.session.user) return res.redirect('/login');
+    if (!req.session.user) return res.redirect('/');
     res.render('ilan-ekle', { user: req.session.user });
 });
 
-// EKLE (POST)
 app.post('/ekle', (req, res) => {
-    if (!req.session.user) return res.redirect('/login');
+    if (!req.session.user) return res.redirect('/');
 
     const { baslik, kategori, fiyat, aciklama } = req.body;
 
@@ -197,18 +202,15 @@ app.post('/ekle', (req, res) => {
     res.redirect('/');
 });
 
-// DÜZENLE (GET)
 app.get('/duzenle/:id', (req, res) => {
-    if (!req.session.user) return res.redirect('/login');
-
+    if (!req.session.user) return res.redirect('/');
     const ilan = ilanlar.find(i => i.id === req.params.id);
     if (!ilan) return res.redirect('/');
     res.render('ilan-duzenle', { ilan, user: req.session.user });
 });
 
-// DÜZENLE (POST)
 app.post('/duzenle/:id', (req, res) => {
-    if (!req.session.user) return res.redirect('/login');
+    if (!req.session.user) return res.redirect('/');
 
     const ilan = ilanlar.find(i => i.id === req.params.id);
     if (!ilan) return res.redirect('/');
@@ -220,9 +222,8 @@ app.post('/duzenle/:id', (req, res) => {
     res.redirect('/detay/' + ilan.id);
 });
 
-// SİL
 app.get('/sil/:id', (req, res) => {
-    if (!req.session.user) return res.redirect('/login');
+    if (!req.session.user) return res.redirect('/');
     ilanlar = ilanlar.filter(i => i.id !== req.params.id);
     res.redirect('/');
 });
