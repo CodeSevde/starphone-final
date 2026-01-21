@@ -53,10 +53,35 @@
         </a>
 
         <div class="d-flex align-items-center text-white">
+
             <a class="nav-link px-3 small" href="/hakkimizda">Hakkımızda</a>
-            <a class="btn btn-warning ms-3 fw-bold rounded-pill px-4" href="/ekle">
-                İlan Ver
-            </a>
+
+            <% if (user) { %>
+                <span class="small me-3">
+                    Hoş geldin, <strong><%= user.name %></strong>
+                </span>
+
+                <a href="/logout"
+                   class="btn btn-outline-light btn-sm rounded-pill">
+                    Çıkış
+                </a>
+
+                <a class="btn btn-warning ms-3 fw-bold rounded-pill px-4" href="/ekle">
+                    İlan Ver
+                </a>
+            <% } else { %>
+                <form action="/login" method="POST" class="d-flex align-items-center ms-3">
+                    <input type="text"
+                           name="name"
+                           class="form-control form-control-sm me-2"
+                           placeholder="Adınız"
+                           required>
+                    <button class="btn btn-warning btn-sm fw-bold rounded-pill px-3">
+                        Üye Girişi
+                    </button>
+                </form>
+            <% } %>
+
         </div>
     </div>
 </nav>
@@ -67,8 +92,11 @@
             Yeni Telefonunu Yıldızların Arasında Bul
         </h1>
 
-        <form action="/" method="GET" class="input-group input-group-lg mx-auto" style="max-width: 900px;">
-            <input type="text" name="search" class="form-control" placeholder="Model ara..."
+        <form action="/" method="GET"
+              class="input-group input-group-lg mx-auto"
+              style="max-width: 900px;">
+            <input type="text" name="search" class="form-control"
+                   placeholder="Model ara..."
                    value="<%= aramaKelimesi || '' %>">
 
             <select name="category" class="form-select" style="max-width: 150px;">
@@ -92,47 +120,40 @@
 
 <div class="container my-5">
     <div class="row">
-        <% if (ilanlar.length > 0) { %>
-            <% ilanlar.forEach(ilan => { %>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card ilan-card h-100 shadow-sm border-0">
-                        <img src="<%= ilan.resim %>"
-                             class="card-img-top"
-                             style="height:220px; object-fit:cover;"
-                             onerror="this.src='/images/android/samsung1.jpeg'">
+        <% ilanlar.forEach(ilan => { %>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card ilan-card h-100 shadow-sm border-0">
+                    <img src="<%= ilan.resim %>"
+                         class="card-img-top"
+                         style="height:220px; object-fit:cover;"
+                         onerror="this.src='/images/android/samsung1.jpeg'">
 
-                        <div class="card-body">
-                            <span class="badge badge-<%= ilan.kategori.toLowerCase() %> mb-2">
-                                <%= ilan.kategori %>
-                            </span>
+                    <div class="card-body">
+                        <span class="badge badge-<%= ilan.kategori.toLowerCase() %> mb-2">
+                            <%= ilan.kategori %>
+                        </span>
 
-                            <h5 class="fw-bold"><%= ilan.baslik %></h5>
-                            <div class="price-tag mb-3"><%= ilan.fiyat %></div>
+                        <h5 class="fw-bold"><%= ilan.baslik %></h5>
+                        <div class="price-tag mb-3"><%= ilan.fiyat %></div>
 
-                            <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                                <a href="/detay/<%= ilan.id %>"
-                                   class="btn btn-primary btn-sm rounded-pill px-4">
-                                    İncele
-                                </a>
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                            <a href="/detay/<%= ilan.id %>"
+                               class="btn btn-primary btn-sm rounded-pill px-4">
+                                İncele
+                            </a>
 
+                            <% if (user) { %>
                                 <a href="/sil/<%= ilan.id %>"
                                    onclick="return confirm('Bu ilan silinsin mi?')"
                                    class="text-danger">
                                     <i class="bi bi-trash3 fs-5"></i>
                                 </a>
-                            </div>
+                            <% } %>
                         </div>
                     </div>
                 </div>
-            <% }) %>
-        <% } else { %>
-            <div class="text-center py-5">
-                <h4 class="text-muted">Sonuç bulunamadı</h4>
-                <a href="/" class="btn btn-outline-primary btn-sm mt-2">
-                    Tüm İlanlar
-                </a>
             </div>
-        <% } %>
+        <% }) %>
     </div>
 </div>
 
