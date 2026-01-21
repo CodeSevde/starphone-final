@@ -5,7 +5,8 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
-// FOTOĞRAF HAVUZLARI
+/* ================= FOTOĞRAF HAVUZLARI ================= */
+
 const iosFotolar = [
     "/images/ios/iphone1.jpeg",
     "/images/ios/iphone2.jpeg",
@@ -48,41 +49,25 @@ const klasikFotolar = [
     "/images/klasik/nokia7.jpeg"
 ];
 
-// GERÇEK MODEL İSİMLERİ
+/* ================= MODEL İSİMLERİ ================= */
+
 const iosModeller = [
-    "iPhone 11",
-    "iPhone 12",
-    "iPhone 13",
-    "iPhone 14",
-    "iPhone 15",
-    "iPhone 11 Pro",
-    "iPhone 12 Pro",
-    "iPhone 13 Pro",
-    "iPhone 14 Pro",
-    "iPhone 15 Pro",
-    "iPhone 15 Pro Max"
+    "iPhone 11","iPhone 12","iPhone 13","iPhone 14","iPhone 15",
+    "iPhone 11 Pro","iPhone 12 Pro","iPhone 13 Pro","iPhone 14 Pro","iPhone 15 Pro","iPhone 15 Pro Max"
 ];
 
 const androidModeller = [
-    "Samsung Galaxy S21",
-    "Samsung Galaxy S22",
-    "Samsung Galaxy S23",
-    "Samsung Galaxy S24",
-    "Samsung Galaxy S24 Ultra",
-    "Samsung Galaxy Note 20",
-    "Samsung Galaxy A54",
-    "Samsung Galaxy A34"
+    "Samsung Galaxy S21","Samsung Galaxy S22","Samsung Galaxy S23",
+    "Samsung Galaxy S24","Samsung Galaxy S24 Ultra","Samsung Galaxy Note 20",
+    "Samsung Galaxy A54","Samsung Galaxy A34"
 ];
 
 const klasikModeller = [
-    "Nokia 3310",
-    "Nokia E72",
-    "Nokia N95",
-    "Nokia 6300",
-    "Nokia 6230"
+    "Nokia 3310","Nokia E72","Nokia N95","Nokia 6300","Nokia 6230"
 ];
 
-// MANUEL İLANLAR
+/* ================= İLANLAR ================= */
+
 let ilanlar = [
     {
         id: "1",
@@ -110,25 +95,23 @@ let ilanlar = [
     }
 ];
 
-// 🔥 OTOMATİK İLAN ÜRETME
+/* ================= OTOMATİK İLAN ÜRET ================= */
+
 const kategoriler = ["iOS", "Android", "Klasik"];
 
 for (let i = 4; i <= 80; i++) {
     const kategori = kategoriler[i % 3];
     const index = i - 4;
 
-    let foto = "";
-    let baslik = "";
+    let foto, baslik;
 
     if (kategori === "iOS") {
         foto = iosFotolar[index % iosFotolar.length];
         baslik = iosModeller[index % iosModeller.length];
-    } 
-    else if (kategori === "Android") {
+    } else if (kategori === "Android") {
         foto = androidFotolar[index % androidFotolar.length];
         baslik = androidModeller[index % androidModeller.length];
-    } 
-    else {
+    } else {
         foto = klasikFotolar[index % klasikFotolar.length];
         baslik = klasikModeller[index % klasikModeller.length];
     }
@@ -143,111 +126,101 @@ for (let i = 4; i <= 80; i++) {
     });
 }
 
-let girisYapanKullanici = null;
+/* ================= ROUTES ================= */
 
-// ANA SAYFA
+// ANA SAYFA (READ)
 app.get('/', (req, res) => {
     const aranan = req.query.search || "";
     const kategori = req.query.category || "";
 
-    let sonuclar = ilanlar;
-
-    if (aranan.trim() !== "" || kategori !== "") {
-        sonuclar = ilanlar.filter(i =>
-            i.baslik.toLowerCase().includes(aranan.toLowerCase()) &&
-            (kategori === "" || i.kategori === kategori)
-        );
-    }
+    let sonuc = ilanlar.filter(i =>
+        i.baslik.toLowerCase().includes(aranan.toLowerCase()) &&
+        (kategori === "" || i.kategori === kategori)
+    );
 
     res.render('anasayfa', {
-        ilanlar: sonuclar,
+        ilanlar: sonuc,
         aramaYapildiMi: !!(aranan || kategori),
         aramaKelimesi: aranan,
         seciliKategori: kategori,
-        user: girisYapanKullanici
+        user: null
     });
 });
 
 // HAKKIMIZDA
 app.get('/hakkimizda', (req, res) => {
-    res.render('hakkimizda', { user: girisYapanKullanici });
+    res.render('hakkimizda');
 });
 
-// DETAY
+// DETAY (READ)
 app.get('/detay/:id', (req, res) => {
     const ilan = ilanlar.find(i => i.id === req.params.id);
     if (!ilan) return res.redirect('/');
-    res.render('ilan-detay', { ilan, user: girisYapanKullanici });
+    res.render('ilan-detay', { ilan });
 });
 
-// SİL
-app.get('/sil/:id', (req, res) => {
-    ilanlar = ilanlar.filter(i => i.id !== req.params.id);
-    res.redirect('/');
-});
-
-// EKLE
+// EKLE (CREATE)
 app.get('/ekle', (req, res) => {
-    res.render('ilan-ekle', { user: girisYapanKullanici });
+    res.render('ilan-ekle');
 });
 
 app.post('/ekle', (req, res) => {
-    const { baslik, kategori, fiyat, resim } = req.body;
+    const { baslik, kategori, fiyat } = req.body;
 
-    let varsayilanFoto = androidFotolar[0];
-    if (kategori === "iOS") varsayilanFoto = iosFotolar[0];
-    if (kategori === "Klasik") varsayilanFoto = klasikFotolar[0];
+    const foto =
+        kategori === "iOS" ? iosFotolar[0] :
+        kategori === "Android" ? androidFotolar[0] :
+        klasikFotolar[0];
 
     ilanlar.push({
-        id: String(Date.now()),
+        id: Date.now().toString(),
         baslik,
         kategori,
         fiyat: fiyat + " ₺",
-        resim: resim || varsayilanFoto,
+        resim: foto,
         aciklama: "Kullanıcı tarafından eklenen ilan."
     });
 
     res.redirect('/');
 });
 
-// AUTH
-app.post('/register', (req, res) => {
-    const { name, email } = req.body;
-    girisYapanKullanici = { name, email };
+// DÜZENLE (UPDATE) ✅
+app.get('/duzenle/:id', (req, res) => {
+    const ilan = ilanlar.find(i => i.id === req.params.id);
+    if (!ilan) return res.redirect('/');
+    res.render('ilan-duzenle', { ilan });
+});
+
+app.post('/duzenle/:id', (req, res) => {
+    const ilan = ilanlar.find(i => i.id === req.params.id);
+    if (!ilan) return res.redirect('/');
+
+    ilan.baslik = req.body.baslik;
+    ilan.fiyat = req.body.fiyat + " ₺";
+    ilan.aciklama = req.body.aciklama;
+
+    res.redirect('/detay/' + ilan.id);
+});
+
+// SİL (DELETE)
+app.get('/sil/:id', (req, res) => {
+    ilanlar = ilanlar.filter(i => i.id !== req.params.id);
     res.redirect('/');
 });
 
-app.post('/login', (req, res) => {
-    const { email } = req.body;
-    girisYapanKullanici = { name: "Test Kullanıcı", email };
-    res.redirect('/');
-});
-// 📩 MESAJ GÖNDER
+// MESAJ GÖNDER
 app.post('/mesaj-gonder', (req, res) => {
-    const { ilanId, adsoyad, mesaj } = req.body;
-
-    console.log("📩 Yeni mesaj alındı:");
-    console.log("İlan ID:", ilanId);
-    console.log("Gönderen:", adsoyad);
-    console.log("Mesaj:", mesaj);
-
     res.send(`
         <script>
-            alert("Mesajınız başarıyla gönderildi 👍");
-            window.location.href = "/detay/${ilanId}";
+            alert("Mesaj gönderildi 👍");
+            history.back();
         </script>
     `);
 });
 
-app.get('/logout', (req, res) => {
-    girisYapanKullanici = null;
-    res.redirect('/');
-});
+/* ================= SERVER ================= */
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
-    console.log("🚀 StarPhone hazır, port:", PORT);
+    console.log("🚀 StarPhone çalışıyor. Port:", PORT);
 });
-
-
