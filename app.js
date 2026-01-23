@@ -13,10 +13,11 @@ app.use(session({
     saveUninitialized: false
 }));
 
-/* ================= FAKE KULLANICI ================= */
+/* ================= ADMIN ================= */
 const fakeUser = {
     name: "Sevde",
-    password: "1234"
+    password: "1234",
+    role: "admin"
 };
 
 /* ================= FOTOĞRAF HAVUZLARI ================= */
@@ -89,7 +90,8 @@ let ilanlar = [
         kategori: "iOS",
         fiyat: "72.500 ₺",
         resim: iosFotolar[0],
-        aciklama: "Apple iPhone 15 Pro, temiz ve sorunsuz."
+        aciklama: "Apple iPhone 15 Pro, temiz ve sorunsuz.",
+        owner: "admin"
     }
 ];
 
@@ -115,18 +117,19 @@ for (let i = 2; i <= 80; i++) {
         kategori,
         fiyat: `${(3000 + index * 350).toLocaleString()} ₺`,
         resim: foto,
-        aciklama: "Cihaz temiz kullanılmıştır."
+        aciklama: "Cihaz temiz kullanılmıştır.",
+        owner: "admin"
     });
 }
 
 /* ================= AUTH ================= */
 
-// LOGIN (ŞİFRELİ)
+// LOGIN
 app.post('/login', (req, res) => {
     const { name, password } = req.body;
 
     if (name === fakeUser.name && password === fakeUser.password) {
-        req.session.user = { name };
+        req.session.user = fakeUser;
         return res.redirect('/');
     }
 
@@ -140,9 +143,7 @@ app.post('/login', (req, res) => {
 
 // LOGOUT
 app.get('/logout', (req, res) => {
-    req.session.destroy(() => {
-        res.redirect('/');
-    });
+    req.session.destroy(() => res.redirect('/'));
 });
 
 /* ================= ROUTES ================= */
@@ -196,7 +197,8 @@ app.post('/ekle', (req, res) => {
         kategori,
         fiyat: fiyat + " ₺",
         resim: foto,
-        aciklama
+        aciklama,
+        owner: "admin"
     });
 
     res.redirect('/');
@@ -205,7 +207,7 @@ app.post('/ekle', (req, res) => {
 app.get('/duzenle/:id', (req, res) => {
     if (!req.session.user) return res.redirect('/');
     const ilan = ilanlar.find(i => i.id === req.params.id);
-    if (!ilan) return res.redirect('/');
+    if (!ilan || ilan.owner !== "admin") return res.redirect('/');
     res.render('ilan-duzenle', { ilan, user: req.session.user });
 });
 
@@ -213,7 +215,7 @@ app.post('/duzenle/:id', (req, res) => {
     if (!req.session.user) return res.redirect('/');
 
     const ilan = ilanlar.find(i => i.id === req.params.id);
-    if (!ilan) return res.redirect('/');
+    if (!ilan || ilan.owner !== "admin") return res.redirect('/');
 
     ilan.baslik = req.body.baslik;
     ilan.fiyat = req.body.fiyat + " ₺";
