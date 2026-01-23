@@ -145,20 +145,24 @@
                         <h5 class="fw-bold"><%= ilan.baslik %></h5>
                         <div class="price-tag mb-3"><%= ilan.fiyat %></div>
 
-                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
-                            <a href="/detay/<%= ilan.id %>"
-                               class="btn btn-primary btn-sm rounded-pill px-4">
-                                İncele
-                            </a>
+                       <div class="d-flex justify-content-between align-items-center border-top pt-3">
+    <a href="/detay/<%= ilan.id %>" class="btn btn-primary btn-sm rounded-pill px-4">
+        İncele
+    </a>
 
-                            <% if (user) { %>
-                                <a href="/sil/<%= ilan.id %>"
-                                   onclick="return confirm('Bu ilan silinsin mi?')"
-                                   class="text-danger">
-                                    <i class="bi bi-trash3 fs-5"></i>
-                                </a>
-                            <% } %>
-                        </div>
+    <% if (user && (user.role === 'admin' || ilan.owner === user.name)) { %>
+        <div class="d-flex gap-2 align-items-center">
+            <a href="/duzenle/<%= ilan.id %>" class="text-secondary">
+                <i class="bi bi-pencil-square fs-5"></i>
+            </a>
+            <a href="/sil/<%= ilan.id %>" 
+               onclick="return confirm('Bu ilanı silmek istediğine emin misin?')" 
+               class="text-danger">
+                <i class="bi bi-trash3 fs-5"></i>
+            </a>
+        </div>
+    <% } %>
+</div>
                     </div>
                 </div>
             </div>
@@ -175,3 +179,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+*

@@ -124,12 +124,14 @@ for (let i = 2; i <= 80; i++) {
 
 /* ================= AUTH ================= */
 
-// LOGIN
+/* ... (Fotoğraf ve Model Havuzları Aynı Kalacak) ... */
+
+// LOGIN (Güncellendi: Artık dinamik bir user nesnesi oluşturuyor)
 app.post('/login', (req, res) => {
     const { name, password } = req.body;
 
     if (name === fakeUser.name && password === fakeUser.password) {
-        req.session.user = fakeUser;
+        req.session.user = { ...fakeUser }; // Admin oturumu
         return res.redirect('/');
     }
 
@@ -141,10 +143,48 @@ app.post('/login', (req, res) => {
     `);
 });
 
-// LOGOUT
-app.get('/logout', (req, res) => {
-    req.session.destroy(() => res.redirect('/'));
+/* ... (Giriş Sayfası ve Detay Rotaları Aynı) ... */
+
+// İLAN EKLEME (Güncellendi: İlanı ekleyen kişinin ismi kaydediliyor)
+app.post('/ekle', (req, res) => {
+    if (!req.session.user) return res.redirect('/');
+
+    const { baslik, kategori, fiyat, aciklama } = req.body;
+
+    const foto =
+        kategori === "iOS" ? iosFotolar[0] :
+        kategori === "Android" ? androidFotolar[0] :
+        klasikFotolar[0];
+
+    ilanlar.push({
+        id: Date.now().toString(),
+        baslik,
+        kategori,
+        fiyat: fiyat + " ₺",
+        resim: foto,
+        aciklama,
+        owner: req.session.user.name // İlan sahibi artık oturum açan kişi (Sevde)
+    });
+
+    res.redirect('/');
 });
+
+// SİLME İŞLEMİ (Güncellendi: Yetki Kontrolü)
+app.get('/sil/:id', (req, res) => {
+    if (!req.session.user) return res.redirect('/');
+    
+    const ilan = ilanlar.find(i => i.id === req.params.id);
+    
+    // Sadece ilan sahibi veya admin silebilir
+    if (ilan && (req.session.user.role === 'admin' || ilan.owner === req.session.user.name)) {
+        ilanlar = ilanlar.filter(i => i.id !== req.params.id);
+        res.redirect('/');
+    } else {
+        res.send("<script>alert('Bu ilanı silme yetkiniz yok!'); history.back();</script>");
+    }
+});
+
+/* ... (Server Dinleme Kısmı Aynı) ... */
 
 /* ================= ROUTES ================= */
 
