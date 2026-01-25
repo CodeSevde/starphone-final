@@ -14,11 +14,15 @@ app.use(session({
 }));
 
 /* ================= ADMIN ================= */
-const fakeUser = {
+let users = [
+  {
+    id: "1",
     name: "Sevde",
     password: "1234",
     role: "admin"
-};
+  }
+];
+
 
 /* ================= FOTOĞRAF HAVUZLARI ================= */
 
@@ -91,7 +95,7 @@ let ilanlar = [
         fiyat: "72.500 ₺",
         resim: iosFotolar[0],
         aciklama: "Apple iPhone 15 Pro, temiz ve sorunsuz.",
-        owner: "admin"
+        ownerId: "1"
     }
 ];
 
@@ -118,76 +122,82 @@ for (let i = 2; i <= 80; i++) {
         fiyat: `${(3000 + index * 350).toLocaleString()} ₺`,
         resim: foto,
         aciklama: "Cihaz temiz kullanılmıştır.",
-        owner: "admin"
+        ownerId: "1"
     });
 }
-
-/* ================= AUTH ================= */
-
-/* ... (Fotoğraf ve Model Havuzları Aynı Kalacak) ... */
-
-// LOGIN (Güncellendi: Artık dinamik bir user nesnesi oluşturuyor)
-app.post('/login', (req, res) => {
+// REGISTER
+app.post('/register', (req, res) => {
     const { name, password } = req.body;
 
-    if (name === fakeUser.name && password === fakeUser.password) {
-        req.session.user = { ...fakeUser }; // Admin oturumu
-        return res.redirect('/');
+    // boş mu kontrol
+    if (!name || !password) {
+        return res.send("<script>alert('Tüm alanları doldur');history.back();</script>");
     }
 
-    res.send(`
-        <script>
-            alert("Hatalı kullanıcı adı veya şifre!");
-            history.back();
-        </script>
-    `);
-});
+    // aynı isimde kullanıcı var mı?
+    const existingUser = users.find(u => u.name === name);
+    if (existingUser) {
+        return res.send("<script>alert('Bu kullanıcı adı zaten var');history.back();</script>");
+    }
 
-/* ... (Giriş Sayfası ve Detay Rotaları Aynı) ... */
-
-// İLAN EKLEME (Güncellendi: İlanı ekleyen kişinin ismi kaydediliyor)
-app.post('/ekle', (req, res) => {
-    if (!req.session.user) return res.redirect('/');
-
-    const { baslik, kategori, fiyat, aciklama } = req.body;
-
-    const foto =
-        kategori === "iOS" ? iosFotolar[0] :
-        kategori === "Android" ? androidFotolar[0] :
-        klasikFotolar[0];
-
-    ilanlar.push({
+    // yeni kullanıcı oluştur
+    const newUser = {
         id: Date.now().toString(),
-        baslik,
-        kategori,
-        fiyat: fiyat + " ₺",
-        resim: foto,
-        aciklama,
-        owner: req.session.user.name // İlan sahibi artık oturum açan kişi (Sevde)
-    });
+        name,
+        password,
+        role: "user"
+    };
+
+    users.push(newUser);
+
+    // kayıt sonrası otomatik giriş
+    req.session.user = newUser;
 
     res.redirect('/');
 });
 
-// SİLME İŞLEMİ (Güncellendi: Yetki Kontrolü)
-app.get('/sil/:id', (req, res) => {
-    if (!req.session.user) return res.redirect('/');
-    
-    const ilan = ilanlar.find(i => i.id === req.params.id);
-    
-    // Sadece ilan sahibi veya admin silebilir
-    if (ilan && (req.session.user.role === 'admin' || ilan.owner === req.session.user.name)) {
-        ilanlar = ilanlar.filter(i => i.id !== req.params.id);
-        res.redirect('/');
-    } else {
-        res.send("<script>alert('Bu ilanı silme yetkiniz yok!'); history.back();</script>");
-    }
+/* ================= AUTH ================= */
+// REGISTER SAYFASI (GET)
+app.get('/register', (req, res) => {
+    res.render('register');
 });
 
-/* ... (Server Dinleme Kısmı Aynı) ... */
+// REGISTER SAYFASI (FORM)
+app.get('/register', (req, res) => {
+    res.render('register');
+});
+
+// LOGIN
+app.post('/login', (req, res) => {
+    const { name, password } = req.body;
+
+    const user = users.find(
+        u => u.name === name && u.password === password
+    );
+
+    if (!user) {
+        return res.send(`
+            <script>
+                alert("Hatalı kullanıcı adı veya şifre");
+                history.back();
+            </script>
+        `);
+    }
+
+    // doğru kullanıcıyı session'a koy
+    req.session.user = user;
+    res.redirect('/');
+});
+
+
+// LOGOUT
+app.get('/logout', (req, res) => {
+    req.session.destroy(() => res.redirect('/'));
+});
 
 /* ================= ROUTES ================= */
 
+// ANA SAYFA
 app.get('/', (req, res) => {
     const aranan = req.query.search || "";
     const kategori = req.query.category || "";
@@ -206,21 +216,25 @@ app.get('/', (req, res) => {
     });
 });
 
+// HAKKIMIZDA
 app.get('/hakkimizda', (req, res) => {
     res.render('hakkimizda', { user: req.session.user });
 });
 
+// DETAY
 app.get('/detay/:id', (req, res) => {
     const ilan = ilanlar.find(i => i.id === req.params.id);
     if (!ilan) return res.redirect('/');
     res.render('ilan-detay', { ilan, user: req.session.user });
 });
 
+// EKLE (GET)
 app.get('/ekle', (req, res) => {
     if (!req.session.user) return res.redirect('/');
     res.render('ilan-ekle', { user: req.session.user });
 });
 
+// EKLE (POST)
 app.post('/ekle', (req, res) => {
     if (!req.session.user) return res.redirect('/');
 
@@ -238,24 +252,36 @@ app.post('/ekle', (req, res) => {
         fiyat: fiyat + " ₺",
         resim: foto,
         aciklama,
-        owner: "admin"
+        ownerId: req.session.user.id
     });
 
     res.redirect('/');
 });
 
+// DÜZENLE (GET)
 app.get('/duzenle/:id', (req, res) => {
     if (!req.session.user) return res.redirect('/');
+
     const ilan = ilanlar.find(i => i.id === req.params.id);
-    if (!ilan || ilan.owner !== "admin") return res.redirect('/');
+    if (!ilan) return res.redirect('/');
+
+    if (req.session.user.role !== 'admin' && ilan.ownerId !== req.session.user.id) {
+        return res.redirect('/');
+    }
+
     res.render('ilan-duzenle', { ilan, user: req.session.user });
 });
 
+// DÜZENLE (POST)
 app.post('/duzenle/:id', (req, res) => {
     if (!req.session.user) return res.redirect('/');
 
     const ilan = ilanlar.find(i => i.id === req.params.id);
-    if (!ilan || ilan.owner !== "admin") return res.redirect('/');
+    if (!ilan) return res.redirect('/');
+
+    if (req.session.user.role !== 'admin' && ilan.ownerId !== req.session.user.id) {
+        return res.redirect('/');
+    }
 
     ilan.baslik = req.body.baslik;
     ilan.fiyat = req.body.fiyat + " ₺";
@@ -264,8 +290,17 @@ app.post('/duzenle/:id', (req, res) => {
     res.redirect('/detay/' + ilan.id);
 });
 
+// SİL
 app.get('/sil/:id', (req, res) => {
     if (!req.session.user) return res.redirect('/');
+
+    const ilan = ilanlar.find(i => i.id === req.params.id);
+    if (!ilan) return res.redirect('/');
+
+    if (req.session.user.role !== 'admin' && ilan.ownerId !== req.session.user.id) {
+        return res.send("<script>alert('Yetkin yok');history.back();</script>");
+    }
+
     ilanlar = ilanlar.filter(i => i.id !== req.params.id);
     res.redirect('/');
 });

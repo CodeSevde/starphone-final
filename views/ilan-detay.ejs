@@ -81,18 +81,23 @@
             </div>
 
             <!-- ✅ CRUD UPDATE + DELETE -->
-            <div class="card sidebar-card p-3 shadow-sm">
-                <a href="/duzenle/<%= ilan.id %>"
-                   class="btn btn-warning w-100 fw-bold mb-2">
-                    ✏️ İlanı Düzenle
-                </a>
+          <% if (user && (user.role === 'admin' || ilan.ownerId === user.id)) { %>
 
-                <a href="/sil/<%= ilan.id %>"
-                   onclick="return confirm('Bu ilan silinsin mi?')"
-                   class="btn btn-outline-danger w-100 fw-bold">
-                    🗑️ İlanı Sil
-                </a>
-            </div>
+<div class="card sidebar-card p-3 shadow-sm">
+    <a href="/duzenle/<%= ilan.id %>"
+       class="btn btn-warning w-100 fw-bold mb-2">
+        ✏️ İlanı Düzenle
+    </a>
+
+    <a href="/sil/<%= ilan.id %>"
+       onclick="return confirm('Bu ilan silinsin mi?')"
+       class="btn btn-outline-danger w-100 fw-bold">
+        🗑️ İlanı Sil
+    </a>
+</div>
+
+<% } %>
+
 
         </div>
     </div>
