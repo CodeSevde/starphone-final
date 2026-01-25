@@ -1,147 +1,262 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hakkımızda | StarPhone</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hakkımızda | StarPhone</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-    <style>
-        body {
-            background-color: #f4f6f8;
-        }
-        .hero {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: white;
-            padding: 90px 0;
-        }
-        .hero h1 span {
-            color: #facc15;
-        }
-        .info-card {
-            border-radius: 18px;
-            transition: all 0.3s ease;
-        }
-        .info-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-        }
-        .icon-box {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: #facc15;
-            color: #0f172a;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            margin: 0 auto 15px;
-        }
-    </style>
+<style>
+:root{
+    --dark:#0f172a;
+    --dark-soft:#1e293b;
+    --yellow:#facc15;
+    --bg:#f8fafc;
+}
+
+body{
+    background:var(--bg);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    color:#334155;
+}
+
+/* NAVBAR */
+.navbar{
+    background:rgba(15,23,42,.9)!important;
+    backdrop-filter:blur(10px);
+}
+
+/* HERO */
+.hero{
+    background:radial-gradient(circle at top right,var(--dark-soft),var(--dark));
+    color:#fff;
+    padding:140px 0 120px; 
+    position:relative;
+    overflow:hidden;
+}
+
+/* Dalgalı ayırıcı */
+.hero::after{
+    content:"";
+    position:absolute;
+    bottom:-1px;
+    left:0;
+    width:100%;
+    height:90px;
+    background:var(--bg);
+    clip-path:polygon(0 70%,100% 100%,100% 0,0 0);
+    z-index:1;
+}
+
+/* Yıldızlar */
+.hero-star{
+    position:absolute;
+    color:var(--yellow);
+    opacity:.25;
+    animation:twinkle 4s infinite ease-in-out;
+}
+@keyframes twinkle{
+    0%,100%{opacity:.2;transform:scale(1)}
+    50%{opacity:.6;transform:scale(1.3)}
+}
+
+/* Telefon silüeti */
+.phone-silhouette{
+    position:absolute;
+    right:8%;
+    top:18%;
+    font-size:10rem;
+    color:#fff;
+    opacity:.08;
+    transform:rotate(12deg);
+}
+@media(max-width:992px){
+    .phone-silhouette{display:none}
+}
+
+.hero h1 span{
+    color:var(--yellow);
+    text-shadow:0 0 20px rgba(250,204,21,.4);
+}
+
+/* STATS WRAPPER - Ok ile işaretlediğin o alt boşluğa indirildi */
+.stats-wrapper {
+    margin-top: 100px; /* Değer artırılarak kutular daha da aşağı çekildi */
+    position: relative;
+    z-index: 2;
+}
+
+.stat{
+    border-radius:22px;
+    background:#fff;
+    transition: .4s;
+    border: 1px solid rgba(0,0,0,.04);
+}
+.stat:hover{
+    transform: translateY(-10px);
+    box-shadow: 0 25px 50px rgba(15, 23, 42, 0.12);
+    border-color: rgba(250, 204, 21, 0.4);
+}
+.stat h2{font-weight:900;color:var(--dark)}
+
+/* KART */
+.card-hover{
+    border-radius:26px;
+    background:#fff;
+    transition:.4s;
+    border:1px solid rgba(0,0,0,.04);
+}
+.card-hover:hover{
+    transform:translateY(-10px);
+    box-shadow:0 25px 50px rgba(15, 23, 42, 0.12);
+    border-color:rgba(250,204,21,.4);
+}
+
+/* ICON */
+.icon-box{
+    width:72px;
+    height:72px;
+    border-radius:22px;
+    background:linear-gradient(135deg,var(--yellow),#eab308);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2rem;
+    color:var(--dark);
+    box-shadow:0 15px 30px rgba(250,204,21,.25);
+}
+
+.step{
+    font-size:3.8rem;
+    font-weight:900;
+    color:var(--yellow);
+    opacity:.3;
+}
+</style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-dark bg-dark sticky-top shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold fs-3" href="/">
-            <i class="bi bi-stars text-warning me-2"></i>STARPHONE
-        </a>
-        <a href="/" class="btn btn-outline-light btn-sm rounded-pill">
-            <i class="bi bi-arrow-left"></i> Ana Sayfa
-        </a>
-    </div>
+<nav class="navbar navbar-dark sticky-top py-3 shadow-sm">
+<div class="container">
+<a class="navbar-brand fw-bold fs-3" href="/">
+<i class="bi bi-stars text-warning me-2"></i>STARPHONE
+</a>
+<a href="/" class="btn btn-outline-light rounded-pill px-4">
+<i class="bi bi-arrow-left"></i> Ana Sayfa
+</a>
+</div>
 </nav>
 
-<!-- HERO -->
 <section class="hero text-center">
-    <div class="container">
-        <h1 class="display-4 fw-bold mb-3">
-            StarPhone <span>Hakkında</span>
-        </h1>
-        <p class="lead opacity-75">
-             İLAN YÖNETİM PLATFORMU 
-        </p>
-    </div>
+<i class="bi bi-star-fill hero-star" style="top:15%;left:12%"></i>
+<i class="bi bi-star-fill hero-star" style="top:55%;left:6%;font-size:1.3rem"></i>
+<i class="bi bi-star-fill hero-star" style="top:30%;right:22%;font-size:1.6rem"></i>
+<i class="bi bi-star-fill hero-star" style="top:70%;right:15%"></i>
+
+<i class="bi bi-phone phone-silhouette"></i>
+
+<div class="container position-relative">
+<h1 class="display-3 fw-bold mb-3">
+StarPhone <span>Hakkında</span>
+</h1>
+<p class="lead opacity-75 mx-auto" style="max-width:650px">
+Telefon ilanlarında güvenli, hızlı ve modern bir buluşma noktası.
+</p>
+</div>
 </section>
 
-<!-- CONTENT -->
-<div class="container my-5">
-    <div class="row g-4">
-
-        <div class="col-md-4">
-            <div class="card info-card h-100 border-0 shadow-sm p-4 text-center">
-                <div class="icon-box">
-                    <i class="bi bi-lightning-charge-fill"></i>
-                </div>
-                <h4 class="fw-bold">Proje Amacı</h4>
-                <p class="text-muted">
-                    StarPhone, kullanıcıların telefon ilanlarını kolayca
-                    ekleyip yönetebileceği, sade ve hızlı bir ilan platformu
-                    oluşturmak amacıyla geliştirilmiştir.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card info-card h-100 border-0 shadow-sm p-4 text-center">
-                <div class="icon-box">
-                    <i class="bi bi-code-slash"></i>
-                </div>
-                <h4 class="fw-bold">Kullanılan Teknolojiler</h4>
-                <p class="text-muted mb-1">HTML, CSS, JavaScript</p>
-                <p class="text-muted mb-1">Node.js & Express.js</p>
-                <p class="text-muted">Bootstrap & EJS</p>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card info-card h-100 border-0 shadow-sm p-4 text-center">
-                <div class="icon-box">
-                    <i class="bi bi-diagram-3-fill"></i>
-                </div>
-                <h4 class="fw-bold">Mimari & Yapı</h4>
-                <p class="text-muted">
-                    Proje MVC mimarisine uygun olarak tasarlanmış olup,
-                    CRUD (Create, Read, Delete) işlemleri aktif şekilde
-                    uygulanmıştır.
-                </p>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ALT AÇIKLAMA -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="bg-white p-5 rounded-4 shadow-sm border-start border-warning border-4">
-                <h4 class="fw-bold mb-3">Akademik Bilgilendirme</h4>
-                <p class="text-muted mb-0">
-                    Bu proje, <strong>İstanbul Topkapı Üniversitesi</strong>
-                    <strong>Web Tasarımı ve Programlama</strong> dersi kapsamında,
-                    final projesi olarak geliştirilmiştir.
-                    Dinamik sayfa yapıları, Express yönlendirmeleri ve kullanıcı
-                    etkileşimleri temel alınmıştır.
-                </p>
-                <div class="mt-3">
-                    <span class="badge bg-warning text-dark p-2">
-                        Geliştirici: Sevde Nur Yıldız
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="container stats-wrapper">
+<div class="row g-4 text-center mb-5">
+<div class="col-md-3 col-6">
+<div class="stat p-4 shadow-sm">
+<h2 class="text-warning">10K+</h2>
+<p class="small text-muted fw-bold mb-0 text-uppercase">AKTİF İLAN</p>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="stat p-4 shadow-sm">
+<h2 class="text-warning">50K+</h2>
+<p class="small text-muted fw-bold mb-0 text-uppercase">ÜYE</p>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="stat p-4 shadow-sm">
+<h2 class="text-warning">%100</h2>
+<p class="small text-muted fw-bold mb-0 text-uppercase">GÜVEN</p>
+</div>
+</div>
+<div class="col-md-3 col-6">
+<div class="stat p-4 shadow-sm">
+<h2 class="text-warning">24/7</h2>
+<p class="small text-muted fw-bold mb-0 text-uppercase">DESTEK</p>
+</div>
+</div>
 </div>
 
-<!-- FOOTER -->
-<footer class="bg-dark text-white text-center py-4">
-    <small class="opacity-50">
-        StarPhone © 2026 — Web Tasarımı ve Programlama Final Projesi
-    </small>
+<div class="row text-center my-5 py-5 border-top border-bottom">
+<div class="col-md-4 mb-4">
+<div class="step">01</div>
+<h5 class="fw-bold">İlanını Oluştur</h5>
+<p class="text-muted small">Telefon bilgilerini ekle, yayına al.</p>
+</div>
+<div class="col-md-4 mb-4">
+<div class="step">02</div>
+<h5 class="fw-bold">Teklifleri İncele</h5>
+<p class="text-muted small">Alıcılarla hızlıca iletişime geç.</p>
+</div>
+<div class="col-md-4 mb-4">
+<div class="step">03</div>
+<h5 class="fw-bold">Satışı Tamamla</h5>
+<p class="text-muted small">Güvenli ve şeffaf ticaret.</p>
+</div>
+</div>
+
+<div class="row g-4">
+<div class="col-lg-4">
+<div class="card-hover p-4 h-100">
+<div class="icon-box mb-4"><i class="bi bi-lightning"></i></div>
+<h4 class="fw-bold">Hızlı</h4>
+<p class="text-muted">Sade arayüz sayesinde saniyeler içinde ilan ver.</p>
+</div>
+</div>
+
+<div class="col-lg-4">
+<div class="card-hover p-4 h-100">
+<div class="icon-box mb-4"><i class="bi bi-shield-check"></i></div>
+<h4 class="fw-bold">Güvenli</h4>
+<p class="text-muted">Yetkilendirme sistemi ile ilanlar korunur.</p>
+</div>
+</div>
+
+<div class="col-lg-4">
+<div class="card-hover p-4 h-100">
+<div class="icon-box mb-4"><i class="bi bi-gem"></i></div>
+<h4 class="fw-bold">Modern</h4>
+<p class="text-muted">iOS, Android ve Klasik için optimize edilmiş yapı.</p>
+</div>
+</div>
+</div>
+
+<div class="row mt-5">
+<div class="col-12">
+<div class="bg-white p-5 rounded-5 shadow-sm border-start border-warning border-5">
+<h3 class="fw-bold mb-3">Vizyonumuz</h3>
+<p class="text-muted fs-5 mb-0">
+StarPhone, kullanıcıların telefon ilanlarını güvenle yayınlayabildiği,
+şeffaf ve modern bir dijital pazar yeri olmayı hedefler.
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<footer class="bg-dark text-white text-center py-5 mt-5">
+<i class="bi bi-stars text-warning fs-1 mb-3"></i>
+<p class="opacity-50 mb-1">StarPhone — Telefonun Yıldızı</p>
+<small class="opacity-50">© 2026 Tüm Hakları Saklıdır</small>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
